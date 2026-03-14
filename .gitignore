@@ -1,0 +1,12 @@
+# Build artifacts & downloads
+.download-cache/
+*.iso
+*.dat
+*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Claude workspace
+.claude/
