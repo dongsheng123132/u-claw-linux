@@ -13,7 +13,7 @@ Write-Host ""
 
 # ── Config ──
 $CacheDir = Join-Path $PSScriptRoot ".download-cache"
-$ISOName = "ubuntu-24.04.2-desktop-amd64.iso"
+$ISOName = "ubuntu-24.04.4-desktop-amd64.iso"
 $ISOPath = Join-Path $CacheDir $ISOName
 $PersistencePath = Join-Path $CacheDir "persistence.dat"
 $VentoyConfigDir = Join-Path $PSScriptRoot "ventoy"

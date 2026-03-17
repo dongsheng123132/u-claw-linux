@@ -14,9 +14,22 @@
 
 ## 中文
 
+### 与主仓库的关系
+
+本仓库是 [U-Claw](https://github.com/dongsheng123132/u-claw) 项目的 **Linux 可启动版**。代码同时存在于两个地方：
+
+| 位置 | 说明 |
+|------|------|
+| **本仓库 (u-claw-linux)** | 独立仓库，方便单独克隆和使用 |
+| [u-claw/bootable/](https://github.com/dongsheng123132/u-claw/tree/main/bootable) | 主仓库内的目录，内容一致 |
+
+两边代码完全一样，选哪个都行。本仓库的优势是**轻量** —— 只克隆 Linux 盘相关的文件，不用拉整个主仓库。
+
+所有脚本**完全自包含**，不依赖主仓库中 `portable/`、`u-claw-app/`、`website/` 的任何文件。出问题只影响自己，不会波及其他模块。
+
 ### 这是什么
 
-这是一个**完全独立**的项目，用于制作**可启动的 Linux AI U 盘**：
+制作一个**可启动的 Linux AI U 盘**：
 
 - 插上任意电脑，从 U 盘启动，直接进入 Ubuntu 桌面
 - 一键安装 OpenClaw AI 助手，桌面图标双击即用
@@ -36,7 +49,7 @@
 │    - 开源引导管理器 v1.0.99                  │
 │                                            │
 │  Ventoy 数据分区（可见）                     │
-│    ubuntu-24.04.2-desktop-amd64.iso  5.8GB │
+│    ubuntu-24.04.4-desktop-amd64.iso  5.8GB │
 │    persistence.dat                   20GB  │
 │    ventoy/ventoy.json                配置   │
 │    u-claw-linux/                     脚本   │
@@ -94,7 +107,7 @@ cd path\to\u-claw-linux
 
 #### Step 2: 下载 Ubuntu ISO (`2-download-iso.ps1`)
 
-- 从国内镜像下载 Ubuntu 24.04.2 桌面版
+- 从国内镜像下载 Ubuntu 24.04.4 桌面版
 - 镜像优先级：清华 → 阿里 → 中科大 → 官方
 - 自动 SHA256 校验确保文件完整
 - 有缓存机制，不会重复下载
@@ -203,7 +216,7 @@ u-claw-linux/
 {
   "persistence": [
     {
-      "image": "/ubuntu-24.04.2-desktop-amd64.iso",
+      "image": "/ubuntu-24.04.4-desktop-amd64.iso",
       "backend": "/persistence.dat",
       "autosel": 1
     }
@@ -252,13 +265,17 @@ u-claw-linux/
    - **务必提前备份 U 盘上的数据**
    - 脚本会列出所有 USB 设备让你确认，看清楚再操作
 
-3. **Step 3 持久化镜像**
-   - 如果你的 Windows 上有 WSL，脚本会自动用它创建 ext4 格式的镜像（最省事）
-   - 如果没有 WSL，会创建空文件，首次进 Linux 后需要手动格式化：
+3. **Step 3 持久化镜像（重要教训）**
+   - 有标准 WSL（Ubuntu 等）→ 自动创建 ext4 镜像（最省事）
+   - 只有 docker-desktop WSL → 脚本会尝试用 `/sbin/mkfs.ext4` 格式化（2026-03-17 修复）
+   - 完全没有 WSL → 创建空文件，**必须**首次进 Linux 后手动格式化：
      ```bash
      sudo mkfs.ext4 -F -L casper-rw /media/*/Ventoy/persistence.dat
      ```
-     格式化后**重启**才能生效
+     格式化后**必须重启**才能生效
+   - **踩坑记录**：空的 persistence.dat（无 ext4 文件系统）会导致 Ventoy 挂载失败，
+     Ubuntu 启动直接掉进 initramfs。验证方法：读取文件 offset 1080 处的 2 字节，
+     应为 `0x53 0xEF`（ext4 magic number `0xEF53` 的 little-endian）
    - 大小建议：32GB U 盘选 20GB，64GB U 盘可以选 40GB+
 
 4. **ISO 下载**
@@ -316,6 +333,7 @@ u-claw-linux/
 |------|---------|
 | 无法从 U 盘启动 | BIOS 关闭 Secure Boot，开启 USB Boot |
 | Ventoy 菜单无 Ubuntu 选项 | 检查 ISO 是否正确放在 Ventoy 数据分区根目录 |
+| 启动卡在 initramfs | persistence.dat 未格式化为 ext4，用 `mkfs.ext4 -F -L casper-rw` 格式化后重启 |
 | 持久化不生效（重启数据丢失） | 检查 persistence.dat 是否已格式化为 ext4，卷标是否为 `casper-rw` |
 | OpenClaw 安装失败 | 检查网络连接，确认能访问 npmmirror.com |
 | 浏览器打不开 | 手动打开浏览器，访问 `http://localhost:18789` |
@@ -355,9 +373,22 @@ u-claw-linux/
 
 ## English
 
+### Relationship with Main Repo
+
+This repo is the **Linux bootable version** of [U-Claw](https://github.com/dongsheng123132/u-claw). The code exists in two places:
+
+| Location | Notes |
+|----------|-------|
+| **This repo (u-claw-linux)** | Standalone, easy to clone and use on its own |
+| [u-claw/bootable/](https://github.com/dongsheng123132/u-claw/tree/main/bootable) | Same code inside the main repo |
+
+Both are identical. This repo is lighter — clone only the Linux bootable files without pulling the entire main repo.
+
+All scripts are **fully self-contained** and do not depend on any files from `portable/`, `u-claw-app/`, or `website/` in the main repo.
+
 ### What is this
 
-A **fully independent** project for creating a **bootable Linux AI USB drive**:
+Create a **bootable Linux AI USB drive**:
 
 - Boot any computer from USB, straight into Ubuntu desktop
 - One-click install OpenClaw AI assistant with desktop shortcut
@@ -425,7 +456,35 @@ sudo bash /media/*/Ventoy/u-claw-linux/setup-openclaw.sh
 - **Persistence**: Ventoy persistence plugin with `casper-rw` labeled ext4 image
 - **Node.js**: v22.14.0 LTS, downloaded from npmmirror.com (China) or nodejs.org
 - **OpenClaw**: Latest version from npm, installed to `/opt/u-claw/`
-- **Completely independent**: Does not reference any files from the main u-claw repo
+- **Fully self-contained**: Does not reference any files from `portable/`, `u-claw-app/`, or `website/`
+
+### Tips & Practical Notes
+
+**Build phase:**
+
+1. **USB drive matters** — Must be 32GB+. Strongly recommend USB 3.0 (blue port). Reliable brands: SanDisk, Kingston, Samsung.
+2. **Step 1 will FORMAT the drive** — All data will be erased. Back up first!
+3. **Step 3 persistence (lesson learned)** — With standard WSL (Ubuntu etc), ext4 image is auto-created. With only docker-desktop WSL, the script now uses `/sbin/mkfs.ext4` to format (fixed 2026-03-17). Without any WSL, you must format manually on first Linux boot:
+   ```bash
+   sudo mkfs.ext4 -F -L casper-rw /media/*/Ventoy/persistence.dat
+   ```
+   **Gotcha**: An unformatted persistence.dat causes Ventoy mount failure → Ubuntu drops to initramfs. Verify: bytes at offset 1080 should be `0x53 0xEF` (ext4 magic `0xEF53` little-endian).
+   Then **reboot** for it to take effect.
+4. **ISO download** — Uses China mirrors (Tsinghua/Alibaba/USTC) by default. If all fail, manually download Ubuntu ISO to `.download-cache/`.
+
+**Boot phase:**
+
+5. **Secure Boot** — Some PCs need Secure Boot disabled in BIOS (Security tab).
+6. **Can't find USB in boot menu** — Try a different USB port. Enable USB Boot in BIOS. Try both Legacy/CSM and UEFI modes.
+7. **Ubuntu loads slowly** — Normal for Live USB. USB 3.0 drive + USB 3.0 port helps a lot. First boot takes 1-3 minutes.
+
+**Usage phase:**
+
+8. **Wi-Fi** — Ubuntu 24.04 supports most chips. Fallback: USB tethering from phone.
+9. **OpenClaw install needs network** — China mirrors, no VPN needed. Takes 1-2 minutes.
+10. **Port conflict** — OpenClaw uses port 18789-18799. If "port in use", close the terminal and reopen.
+11. **Data location** — Everything in `/opt/u-claw/`. Config at `/opt/u-claw/data/.openclaw/openclaw.json`. Data persists across reboots.
+12. **Performance** — USB is slower than SSD, but AI inference runs in the cloud. Chat speed is unaffected.
 
 ### Troubleshooting
 
@@ -433,16 +492,19 @@ sudo bash /media/*/Ventoy/u-claw-linux/setup-openclaw.sh
 |-------|----------|
 | Can't boot from USB | Disable Secure Boot in BIOS, enable USB Boot |
 | No Ubuntu in Ventoy | Check ISO is in Ventoy data partition root |
+| Boot stuck at initramfs | persistence.dat not formatted as ext4, format with `mkfs.ext4 -F -L casper-rw` then reboot |
 | Persistence not working | Ensure persistence.dat is ext4 with label `casper-rw` |
 | OpenClaw install fails | Check network, ensure npmmirror.com is reachable |
 | Browser won't open | Manually open browser to `http://localhost:18789` |
+| Screen resolution wrong | Settings -> Displays -> Resolution |
 
 ### Related
 
-| Repo | Purpose | Platform |
-|------|---------|----------|
+| Location | Purpose | Platform |
+|----------|---------|----------|
 | [u-claw](https://github.com/dongsheng123132/u-claw) | Portable USB + Desktop app | Mac / Windows |
-| **u-claw-linux** (this repo) | Bootable Linux USB | Any x86_64 PC |
+| [u-claw/bootable/](https://github.com/dongsheng123132/u-claw/tree/main/bootable) | Same code in main repo | Any x86_64 PC |
+| **u-claw-linux** (this repo) | Standalone bootable Linux USB | Any x86_64 PC |
 
 ### Contact
 

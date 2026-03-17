@@ -12,17 +12,17 @@ Write-Host "============================================" -ForegroundColor Cyan
 Write-Host ""
 
 # ── Config ──
-$ISOName = "ubuntu-24.04.2-desktop-amd64.iso"
-$SHA256Expected = "d6dab0c3a657988501b4bd76f1297c053df710e06e0c3aece60dead24f270b4d"
+$ISOName = "ubuntu-24.04.4-desktop-amd64.iso"
+$SHA256Expected = "3a4c9877b483ab46d7c3fbe165a0db275e1ae3cfe56a5657e5a47c2f99a99d1e"
 $CacheDir = Join-Path $PSScriptRoot ".download-cache"
 $ISOPath = Join-Path $CacheDir $ISOName
 
 # Mirror list (China mirrors first)
 $Mirrors = @(
-    "https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/24.04.2/$ISOName",
-    "https://mirrors.aliyun.com/ubuntu-releases/24.04.2/$ISOName",
-    "https://mirrors.ustc.edu.cn/ubuntu-releases/24.04.2/$ISOName",
-    "https://releases.ubuntu.com/24.04.2/$ISOName"
+    "https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/24.04.4/$ISOName",
+    "https://mirrors.aliyun.com/ubuntu-releases/24.04.4/$ISOName",
+    "https://mirrors.ustc.edu.cn/ubuntu-releases/24.04.4/$ISOName",
+    "https://releases.ubuntu.com/24.04.4/$ISOName"
 )
 
 # ── Create cache directory ──
@@ -50,7 +50,7 @@ if (Test-Path $ISOPath) {
 }
 
 # ── Download ISO ──
-Write-Host "[INFO] Downloading Ubuntu 24.04.2 Desktop (~5.8 GB)..." -ForegroundColor Yellow
+Write-Host "[INFO] Downloading Ubuntu 24.04.4 Desktop (~5.8 GB)..." -ForegroundColor Yellow
 Write-Host "       This will take a while depending on your connection." -ForegroundColor Gray
 Write-Host ""
 
@@ -76,8 +76,8 @@ foreach ($mirror in $Mirrors) {
 if (-not $downloaded) {
     Write-Host ""
     Write-Host "[ERROR] All download mirrors failed." -ForegroundColor Red
-    Write-Host "        Please download Ubuntu 24.04.2 Desktop ISO manually:" -ForegroundColor Yellow
-    Write-Host "        https://releases.ubuntu.com/24.04.2/" -ForegroundColor Yellow
+    Write-Host "        Please download Ubuntu 24.04.4 Desktop ISO manually:" -ForegroundColor Yellow
+    Write-Host "        https://releases.ubuntu.com/24.04.4/" -ForegroundColor Yellow
     Write-Host "        Save it as: $ISOPath" -ForegroundColor Yellow
     Read-Host "Press Enter to exit"
     exit 1
