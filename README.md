@@ -454,7 +454,7 @@ sudo bash /media/*/Ventoy/u-claw-linux/setup-openclaw.sh
 
 - **Ventoy 1.0.99**: Open-source boot manager, supports ISO/WIM/VHD, BIOS + UEFI
 - **Persistence**: Ventoy persistence plugin with `casper-rw` labeled ext4 image
-- **Node.js**: v22.14.0 LTS, downloaded from npmmirror.com (China) or nodejs.org
+- **Node.js**: version pinned by `NODE_VERSION` in [the setup script](linux-setup/setup-openclaw.sh), downloaded from npmmirror.com (China) or nodejs.org
 - **OpenClaw**: Latest version from npm, installed to `/opt/u-claw/`
 - **Fully self-contained**: Does not reference any files from `portable/`, `u-claw-app/`, or `website/`
 
